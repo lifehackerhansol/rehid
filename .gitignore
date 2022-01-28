@@ -1,0 +1,6 @@
+*.cxi
+*.elf
+*.3dsx
+*.cia
+*.bin
+build
