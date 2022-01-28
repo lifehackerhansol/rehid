@@ -33,6 +33,7 @@ void Pad::SetTimer()
 extern u8 irneeded;
 extern u32 debugpadkeys;
 extern CirclePadEntry debugpadstick;
+
 void Pad::ReadFromIO(PadEntry *entry, uint32_t *raw, CirclePadEntry *circlepad, Remapper *remapper)
 {
     volatile uint32_t latest = (vu32)(IOHIDPAD) ^ 0xFFF;
@@ -48,7 +49,7 @@ void Pad::ReadFromIO(PadEntry *entry, uint32_t *raw, CirclePadEntry *circlepad, 
         circlepad->y = debugpadstick.y;
     }
     */
-    latest = m_circlepad.ConvertToHidButtons(circlepad, latest); // if need be this also sets the circlepad entry to 0
+    // latest = m_circlepad.ConvertToHidButtons(circlepad, latest); // if need be this also sets the circlepad entry to 0
     if(irneeded == 1){
         iruScanInput_();
         m_rawkeys = iruKeysHeld_();
@@ -82,6 +83,7 @@ void Pad::Sampling(u32 rcpr, Remapper *remapper)
     ReadFromIO(&finalentry, &latest, &finalcirclepad, remapper);
     m_ring->SetCurrPadState(latest, rawcirclepad);
     m_ring->Set3dSliderVal(sliderval);
-    m_ring->WriteToRing(&finalentry, &finalcirclepad);
+    CirclePadEntry disabledcirclepad = {0, 0};
+    m_ring->WriteToRing(&finalentry, &disabledcirclepad);
     svcSignalEvent(m_event);
 }
